@@ -28,7 +28,10 @@ class Settings(BaseSettings):
     postgres_db: str = "portfolio"
     database_url: str | None = None
 
-    cors_origins: str = "http://localhost:3000,http://localhost:5173"
+    cors_origins: str = (
+        "http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173"
+    )
+    url_front: str | None = None
     log_level: str = "INFO"
 
     secret_key: str = "change-me-in-production"
@@ -47,7 +50,12 @@ class Settings(BaseSettings):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def cors_origins_list(self) -> list[str]:
-        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+        origins = [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+        if self.url_front:
+            front = self.url_front.strip()
+            if front and front not in origins:
+                origins.append(front)
+        return origins
 
 
 @lru_cache

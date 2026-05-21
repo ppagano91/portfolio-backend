@@ -1,8 +1,18 @@
+from geoalchemy2.shape import to_shape
+
 from app.core.errors import BadRequestError, NotFoundError
 from app.models.project import Project
 from app.repositories.project_repository import ProjectRepository
 from app.repositories.technology_repository import TechnologyRepository
-from app.schemas.project import ProjectCreate, ProjectUpdate
+from app.schemas.dashboard import DashboardRead
+from app.schemas.notebook import NotebookRead
+from app.schemas.project import (
+    ProjectCreate,
+    ProjectDetailRead,
+    ProjectLocationRead,
+    ProjectRead,
+    ProjectUpdate,
+)
 from app.utils.slug import ensure_unique_slug, slugify
 
 
@@ -26,6 +36,31 @@ class ProjectService:
         if not project:
             raise NotFoundError("Proyecto", slug)
         return project
+
+    def _location_to_read(self, location) -> ProjectLocationRead:
+        latitude, longitude = None, None
+        if location.geom is not None:
+            point = to_shape(location.geom)
+            longitude, latitude = point.x, point.y
+        return ProjectLocationRead(
+            id=location.id,
+            name=location.name,
+            description=location.description,
+            latitude=latitude,
+            longitude=longitude,
+        )
+
+    def get_detail_by_slug(self, slug: str) -> ProjectDetailRead:
+        project = self.project_repo.get_by_slug(slug, with_details=True)
+        if not project:
+            raise NotFoundError("Proyecto", slug)
+        base = ProjectRead.model_validate(project)
+        return ProjectDetailRead(
+            **base.model_dump(),
+            dashboards=[DashboardRead.model_validate(d) for d in project.dashboards],
+            notebooks=[NotebookRead.model_validate(n) for n in project.notebooks],
+            locations=[self._location_to_read(loc) for loc in project.locations],
+        )
 
     def get_by_id(self, project_id: int) -> Project:
         project = self.project_repo.get_by_id(project_id)

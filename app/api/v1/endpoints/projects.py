@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query, status
 
 from app.api.deps import get_project_service
 from app.schemas.common import ApiResponse, success_response
-from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
+from app.schemas.project import ProjectCreate, ProjectDetailRead, ProjectRead, ProjectUpdate
 from app.services.project_service import ProjectService
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -25,12 +25,12 @@ def list_featured_projects(
     return success_response(projects)
 
 
-@router.get("/{slug}", response_model=ApiResponse[ProjectRead])
+@router.get("/{slug}", response_model=ApiResponse[ProjectDetailRead])
 def get_project_by_slug(
     slug: str,
     service: ProjectService = Depends(get_project_service),
-) -> ApiResponse[ProjectRead]:
-    project = service.get_by_slug(slug)
+) -> ApiResponse[ProjectDetailRead]:
+    project = service.get_detail_by_slug(slug)
     return success_response(project)
 
 

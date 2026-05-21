@@ -71,7 +71,13 @@ pip install -r requirements.txt
 alembic upgrade head
 ```
 
-4. Iniciar servidor:
+4. Cargar datos iniciales (después de migraciones):
+
+```bash
+psql -h localhost -U portfolio -d portfolio -f database/init.sql
+```
+
+5. Iniciar servidor:
 
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -122,7 +128,8 @@ Los tests iniciales cubren healthcheck y validación de contacto sin requerir ba
 | `POSTGRES_PASSWORD` | Contraseña | portfolio |
 | `POSTGRES_DB` | Base de datos | portfolio |
 | `DATABASE_URL` | URL completa (opcional) | — |
-| `CORS_ORIGINS` | Orígenes CORS separados por coma | localhost:3000,5173 |
+| `CORS_ORIGINS` | Orígenes CORS separados por coma | localhost:3000,5173,127.0.0.1:5173 |
+| `URL_FRONT` | URL del frontend (se agrega a CORS) | — |
 | `LOG_LEVEL` | Nivel de logging | INFO |
 | `SECRET_KEY` | Clave para futura auth admin | change-me-in-production |
 
@@ -132,6 +139,7 @@ Los tests iniciales cubren healthcheck y validación de contacto sin requerir ba
 |--------|------|-------------|
 | GET | `/api/v1/health` | Health de la app |
 | GET | `/api/v1/health/db` | Health de PostgreSQL |
+| GET | `/api/v1/profile` | Perfil profesional (hero, about, experience, education) |
 | GET | `/api/v1/projects` | Listar proyectos |
 | GET | `/api/v1/projects/featured` | Proyectos destacados |
 | GET | `/api/v1/projects/{slug}` | Detalle por slug |
@@ -185,5 +193,5 @@ Error:
 
 - Autenticación admin en `core/security.py`
 - Filtros y paginación en listados
-- Seeds de datos iniciales
+- Seeds: ejecutar `database/init.sql` tras `alembic upgrade head`
 - Endpoints GIS para ubicaciones de proyectos

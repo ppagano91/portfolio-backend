@@ -11,6 +11,13 @@ class ProjectRepository:
     def _base_query(self):
         return select(Project).options(selectinload(Project.technologies))
 
+    def _detail_query(self):
+        return self._base_query().options(
+            selectinload(Project.dashboards),
+            selectinload(Project.notebooks),
+            selectinload(Project.locations),
+        )
+
     def get_all(
         self,
         *,
@@ -25,8 +32,10 @@ class ProjectRepository:
         stmt = stmt.order_by(Project.created_at.desc())
         return list(self.db.scalars(stmt).all())
 
-    def get_by_slug(self, slug: str) -> Project | None:
-        stmt = self._base_query().where(Project.slug == slug)
+    def get_by_slug(self, slug: str, *, with_details: bool = False) -> Project | None:
+        stmt = (self._detail_query() if with_details else self._base_query()).where(
+            Project.slug == slug
+        )
         return self.db.scalar(stmt)
 
     def get_by_id(self, project_id: int) -> Project | None:

@@ -3,6 +3,8 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.project import ProjectStatus, ProjectType
+from app.schemas.dashboard import DashboardRead
+from app.schemas.notebook import NotebookRead
 
 
 class ProjectBase(BaseModel):
@@ -68,3 +70,17 @@ class ProjectRead(BaseModel):
     created_at: datetime
     updated_at: datetime
     technologies: list[TechnologyBrief] = Field(default_factory=list)
+
+
+class ProjectLocationRead(BaseModel):
+    id: int
+    name: str
+    description: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+
+
+class ProjectDetailRead(ProjectRead):
+    dashboards: list[DashboardRead] = Field(default_factory=list)
+    notebooks: list[NotebookRead] = Field(default_factory=list)
+    locations: list[ProjectLocationRead] = Field(default_factory=list)
