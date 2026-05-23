@@ -1,10 +1,16 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.models.project import ProjectStatus, ProjectType
 from app.schemas.dashboard import DashboardRead
 from app.schemas.notebook import NotebookRead
+
+
+def _normalize_enum_string(value: object) -> object:
+    if isinstance(value, str):
+        return value.lower()
+    return value
 
 
 class ProjectBase(BaseModel):
@@ -20,6 +26,16 @@ class ProjectBase(BaseModel):
     featured: bool = False
     published: bool = False
     technology_ids: list[int] = Field(default_factory=list)
+
+    @field_validator("project_type", mode="before")
+    @classmethod
+    def normalize_project_type(cls, value: object) -> object:
+        return _normalize_enum_string(value)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def normalize_status(cls, value: object) -> object:
+        return _normalize_enum_string(value)
 
 
 class ProjectCreate(ProjectBase):
@@ -40,6 +56,16 @@ class ProjectUpdate(BaseModel):
     featured: bool | None = None
     published: bool | None = None
     technology_ids: list[int] | None = None
+
+    @field_validator("project_type", mode="before")
+    @classmethod
+    def normalize_project_type(cls, value: object) -> object:
+        return _normalize_enum_string(value)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def normalize_status(cls, value: object) -> object:
+        return _normalize_enum_string(value)
 
 
 class TechnologyBrief(BaseModel):

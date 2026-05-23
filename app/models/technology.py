@@ -17,13 +17,22 @@ class TechnologyCategory(str, enum.Enum):
     OTHER = "other"
 
 
+def _technology_category_values(enum_cls: type[TechnologyCategory]) -> list[str]:
+    return [member.value for member in enum_cls]
+
+
 class Technology(Base):
     __tablename__ = "technologies"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     category: Mapped[TechnologyCategory] = mapped_column(
-        Enum(TechnologyCategory, name="technology_category_enum", native_enum=False),
+        Enum(
+            TechnologyCategory,
+            name="technology_category_enum",
+            native_enum=False,
+            values_callable=_technology_category_values,
+        ),
         nullable=False,
         default=TechnologyCategory.OTHER,
     )

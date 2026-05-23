@@ -36,10 +36,18 @@ class ProjectType(str, enum.Enum):
     OTHER = "other"
 
 
+def _project_type_values(enum_cls: type[ProjectType]) -> list[str]:
+    return [member.value for member in enum_cls]
+
+
 class ProjectStatus(str, enum.Enum):
     DRAFT = "draft"
     PUBLISHED = "published"
     ARCHIVED = "archived"
+
+
+def _project_status_values(enum_cls: type[ProjectStatus]) -> list[str]:
+    return [member.value for member in enum_cls]
 
 
 class Project(Base, TimestampMixin):
@@ -52,12 +60,22 @@ class Project(Base, TimestampMixin):
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     project_type: Mapped[ProjectType] = mapped_column(
-        Enum(ProjectType, name="project_type_enum", native_enum=False),
+        Enum(
+            ProjectType,
+            name="project_type_enum",
+            native_enum=False,
+            values_callable=_project_type_values,
+        ),
         nullable=False,
         default=ProjectType.OTHER,
     )
     status: Mapped[ProjectStatus] = mapped_column(
-        Enum(ProjectStatus, name="project_status_enum", native_enum=False),
+        Enum(
+            ProjectStatus,
+            name="project_status_enum",
+            native_enum=False,
+            values_callable=_project_status_values,
+        ),
         nullable=False,
         default=ProjectStatus.DRAFT,
     )
