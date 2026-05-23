@@ -214,6 +214,97 @@ ON CONFLICT (profile_id, company, position) DO UPDATE SET
 
 
 -- ============================================================
+-- EDUCATION (requiere migración 007)
+-- ============================================================
+
+INSERT INTO education (
+    institution,
+    degree,
+    field_of_study,
+    description,
+    start_date,
+    end_date,
+    is_current,
+    location,
+    institution_url,
+    education_type,
+    sort_order,
+    published
+)
+VALUES
+    (
+        'Universidad Nacional del Sur',
+        'Licenciatura en Ciencias Geológicas',
+        'Geología',
+        'Formación en ciencias geológicas, cartografía y análisis de datos georreferenciados.',
+        '2012-03-01'::date,
+        '2018-12-01'::date,
+        FALSE,
+        'Bahía Blanca, Argentina',
+        'https://www.uns.edu.ar/',
+        'formal',
+        1,
+        TRUE
+    ),
+    (
+        'Universidad Nacional del Sur',
+        'Especialización en Ciencia de Datos',
+        'Ciencia de Datos',
+        'Programa orientado a análisis de datos, estadística y modelado aplicado.',
+        '2020-03-01'::date,
+        '2021-12-01'::date,
+        FALSE,
+        'Bahía Blanca, Argentina',
+        'https://www.uns.edu.ar/',
+        'formal',
+        2,
+        TRUE
+    ),
+    (
+        'Universidad de Buenos Aires',
+        'Diplomatura en Sistemas de Información Geográfica',
+        'SIG',
+        'Formación en sistemas de información geográfica, análisis espacial y cartografía digital.',
+        '2019-03-01'::date,
+        '2020-12-01'::date,
+        FALSE,
+        'Buenos Aires, Argentina',
+        'https://www.uba.ar/',
+        'course',
+        3,
+        TRUE
+    ),
+    (
+        'Instituto Gulich',
+        'Diplomatura Universitaria en Geomática Aplicada',
+        'Geomática',
+        'Aplicación de técnicas geomáticas y geoespaciales a problemas territoriales y ambientales.',
+        '2021-03-01'::date,
+        '2022-12-01'::date,
+        FALSE,
+        'Argentina',
+        NULL,
+        'course',
+        4,
+        TRUE
+    ),
+    (
+        'Universidad Nacional de Córdoba / ICARO',
+        'Diplomatura en Desarrollo Web Full Stack',
+        'Desarrollo Web',
+        'Programa intensivo de desarrollo web full stack con proyectos prácticos.',
+        '2022-03-01'::date,
+        '2022-12-01'::date,
+        FALSE,
+        'Córdoba, Argentina',
+        NULL,
+        'course',
+        5,
+        TRUE
+    );
+
+
+-- ============================================================
 -- PROJECTS
 -- ============================================================
 
