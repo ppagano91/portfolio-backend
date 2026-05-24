@@ -6,6 +6,7 @@ def test_get_public_profile(client):
     assert body["data"] is not None
     assert body["error"] is None
     assert "name" in body["data"]
+    assert "cv_url" in body["data"]
     assert "experiences" in body["data"]
 
 

@@ -71,8 +71,12 @@ INSERT INTO profiles (
     subtitle,
     summary,
     location,
+    profile_image_url,
     linkedin_url,
     github_url,
+    email,
+    phone,
+    cv_url,
     about_title,
     about_content,
     focus_areas,
@@ -84,15 +88,19 @@ VALUES (
     'Patricio Pagano',
     'patricio-pagano',
     'Desarrollador Full Stack GIS | Licenciado en Ciencias Geológicas | Especialista en Ciencia de Datos',
-    'GIS, Datos Espaciales, Backend, GeoServer, PostgreSQL/PostGIS, React y MapLibre',
-    'Geólogo y Desarrollador Full Stack GIS con experiencia en desarrollo de aplicaciones web geoespaciales, APIs REST, bases de datos espaciales y publicación de servicios GIS.',
+    'GIS, datos espaciales, backend, GeoServer, PostgreSQL/PostGIS, React y MapLibre',
+    'Geólogo y Desarrollador Full Stack GIS con experiencia en aplicaciones web geoespaciales, APIs REST, bases de datos espaciales y publicación de servicios GIS.',
     'Argentina',
+    'https://media.licdn.com/dms/image/v2/D4D03AQFwDgltNvy2bg/profile-displayphoto-crop_800_800/B4DZ5QTuu_J8AI-/0/1779463810864?e=1781136000&v=beta&t=DXfE0ntB1aSf-WVQMzyoMF6JRTz9RPJ10hGPLZ0H-Ns',
     'https://www.linkedin.com/in/patricio-pagano/',
     'https://github.com/ppagano91',
-    'Perfil profesional',
-    'Perfil orientado a GIS, datos, software, geociencias, minería, Oil & Gas y geomática, combinando desarrollo backend/frontend con análisis geoespacial.',
-    '["GIS y datos espaciales", "Backend geoespacial", "PostgreSQL/PostGIS", "GeoServer y servicios OGC", "Visualización web de mapas"]'::json,
-    '["Python", "FastAPI", "PostgreSQL", "PostGIS", "GeoServer", "QGIS", "React", "MapLibre", "Docker", "SQLAlchemy"]'::json,
+    'pagano.patricio@gmail.com',
+    '2916418967',
+    'https://drive.google.com/drive/u/1/folders/1mqtv3alsWqKROhL-kHZItUuF0GuMMeqs',
+    'Sobre mí',
+    E'Soy Licenciado en Ciencias Geológicas y Desarrollador Full Stack GIS, con formación complementaria en Ciencia de Datos, Sistemas de Información Geográfica y Geomática. Mi perfil combina conocimiento territorial, análisis de datos espaciales y desarrollo de software para construir soluciones geoespaciales robustas, claras y mantenibles.\n\nTrabajo en el desarrollo de aplicaciones web GIS, APIs REST y herramientas para consulta, visualización y administración de información geográfica. Tengo experiencia con PostgreSQL/PostGIS, GeoServer, QGIS, servicios OGC y librerías de mapas web como Leaflet y MapLibre, integrando backend, frontend y bases de datos espaciales en soluciones orientadas a usuarios técnicos y funcionales.\n\nMe interesa especialmente la intersección entre geociencias, datos y tecnología. Por eso oriento mi trabajo hacia proyectos vinculados a GIS, geomática, análisis territorial, minería, Oil & Gas y visualización de datos georreferenciados. Busco desarrollar herramientas que no solo funcionen, sino que también sean útiles, eficientes y fáciles de evolucionar.',
+    '["Aplicaciones Web Geoespaciales", "APIs REST para Datos Espaciales", "Ciencia de Datos", "Geomática", "Geociencias", "Minería", "Oil & Gas"]'::json,
+    '["Python", "PostgreSQL", "PostGIS", "GeoServer", "GeoNetwork", "Geoserver", "React", "JavaScript", "TypeScript", "MapLibre", "Power BI", "Docker", "Git"]'::json,
     TRUE,
     0
 )
@@ -102,8 +110,12 @@ ON CONFLICT (slug) DO UPDATE SET
     subtitle = EXCLUDED.subtitle,
     summary = EXCLUDED.summary,
     location = EXCLUDED.location,
+    profile_image_url = EXCLUDED.profile_image_url,
     linkedin_url = EXCLUDED.linkedin_url,
     github_url = EXCLUDED.github_url,
+    email = EXCLUDED.email,
+    phone = EXCLUDED.phone,
+    cv_url = EXCLUDED.cv_url,
     about_title = EXCLUDED.about_title,
     about_content = EXCLUDED.about_content,
     focus_areas = EXCLUDED.focus_areas,
@@ -116,6 +128,7 @@ INSERT INTO experiences (
     profile_id,
     company,
     position,
+    location,
     start_date,
     end_date,
     is_current,
@@ -129,6 +142,7 @@ SELECT
     p.id,
     v.company,
     v.position,
+    v.location,
     v.start_date::date,
     v.end_date::date,
     v.is_current,
@@ -143,6 +157,7 @@ CROSS JOIN (
         (
             'Geosystems SA',
             'Desarrollador Full Stack GIS',
+            'Ciudad Autónoma de Buenos Aires',
             '2023-01-01',
             NULL,
             TRUE,
@@ -155,6 +170,7 @@ CROSS JOIN (
         (
             'Paradigma del Sur SA',
             'Desarrollador Full Stack Jr',
+            'Bahía Blanca',
             '2022-01-01',
             '2023-12-31',
             FALSE,
@@ -167,6 +183,7 @@ CROSS JOIN (
         (
             'Universidad Nacional del Sur',
             'Auxiliar de Investigación',
+            'Bahía Blanca',
             '2021-01-01',
             '2022-12-31',
             FALSE,
@@ -179,6 +196,7 @@ CROSS JOIN (
         (
             'Tutor Académico Independiente',
             'Tutor de Geología General y Carteo Geológico',
+            NULL,
             '2018-01-01',
             '2020-12-31',
             FALSE,
@@ -186,11 +204,12 @@ CROSS JOIN (
             '["Preparación de contenidos técnicos.", "Acompañamiento académico orientado a objetivos concretos."]',
             '["Geología", "Cartografía", "GIS"]',
             4,
-            TRUE
+            FALSE
         )
 ) AS v(
     company,
     position,
+    location,
     start_date,
     end_date,
     is_current,
@@ -202,6 +221,7 @@ CROSS JOIN (
 )
 WHERE p.slug = 'patricio-pagano'
 ON CONFLICT (profile_id, company, position) DO UPDATE SET
+    location = EXCLUDED.location,
     start_date = EXCLUDED.start_date,
     end_date = EXCLUDED.end_date,
     is_current = EXCLUDED.is_current,
@@ -217,6 +237,9 @@ ON CONFLICT (profile_id, company, position) DO UPDATE SET
 -- EDUCATION (requiere migración 007)
 -- ============================================================
 
+DELETE FROM education
+WHERE institution = 'Universidad Nacional de Córdoba / ICARO';
+
 INSERT INTO education (
     institution,
     degree,
@@ -231,77 +254,98 @@ INSERT INTO education (
     sort_order,
     published
 )
-VALUES
-    (
-        'Universidad Nacional del Sur',
-        'Licenciatura en Ciencias Geológicas',
-        'Geología',
-        'Formación en ciencias geológicas, cartografía y análisis de datos georreferenciados.',
-        '2012-03-01'::date,
-        '2018-12-01'::date,
-        FALSE,
-        'Bahía Blanca, Argentina',
-        'https://www.uns.edu.ar/',
-        'formal',
-        1,
-        TRUE
-    ),
-    (
-        'Universidad Nacional del Sur',
-        'Especialización en Ciencia de Datos',
-        'Ciencia de Datos',
-        'Programa orientado a análisis de datos, estadística y modelado aplicado.',
-        '2020-03-01'::date,
-        '2021-12-01'::date,
-        FALSE,
-        'Bahía Blanca, Argentina',
-        'https://www.uns.edu.ar/',
-        'formal',
-        2,
-        TRUE
-    ),
-    (
-        'Universidad de Buenos Aires',
-        'Diplomatura en Sistemas de Información Geográfica',
-        'SIG',
-        'Formación en sistemas de información geográfica, análisis espacial y cartografía digital.',
-        '2019-03-01'::date,
-        '2020-12-01'::date,
-        FALSE,
-        'Buenos Aires, Argentina',
-        'https://www.uba.ar/',
-        'course',
-        3,
-        TRUE
-    ),
-    (
-        'Instituto Gulich',
-        'Diplomatura Universitaria en Geomática Aplicada',
-        'Geomática',
-        'Aplicación de técnicas geomáticas y geoespaciales a problemas territoriales y ambientales.',
-        '2021-03-01'::date,
-        '2022-12-01'::date,
-        FALSE,
-        'Argentina',
-        NULL,
-        'course',
-        4,
-        TRUE
-    ),
-    (
-        'Universidad Nacional de Córdoba / ICARO',
-        'Diplomatura en Desarrollo Web Full Stack',
-        'Desarrollo Web',
-        'Programa intensivo de desarrollo web full stack con proyectos prácticos.',
-        '2022-03-01'::date,
-        '2022-12-01'::date,
-        FALSE,
-        'Córdoba, Argentina',
-        NULL,
-        'course',
-        5,
-        TRUE
-    );
+SELECT
+    v.institution,
+    v.degree,
+    v.field_of_study,
+    v.description,
+    v.start_date::date,
+    v.end_date::date,
+    v.is_current,
+    v.location,
+    v.institution_url,
+    v.education_type,
+    v.sort_order,
+    v.published
+FROM (
+    VALUES
+        (
+            'Universidad Nacional del Sur',
+            'Licenciatura en Ciencias Geológicas',
+            'Geología',
+            NULL,
+            '2011-03-14',
+            '2017-12-22',
+            FALSE,
+            'Bahía Blanca',
+            NULL,
+            'formal',
+            1,
+            TRUE
+        ),
+        (
+            'Universidad Nacional del Sur',
+            'Especialización en Ciencia de Datos',
+            'Computación',
+            NULL,
+            '2022-08-16',
+            '2023-07-01',
+            FALSE,
+            'Bahía Blanca',
+            NULL,
+            'formal',
+            0,
+            TRUE
+        ),
+        (
+            'Instituto Gulich',
+            'Diplomatura en Geomática Aplicada',
+            'Tecnologías de la Información',
+            NULL,
+            '2025-02-15',
+            '2025-12-09',
+            FALSE,
+            'Córdoba',
+            NULL,
+            'course',
+            0,
+            TRUE
+        ),
+        (
+            'Universidad de Buenos Aires',
+            'Diplomatura en Sistemas de Información Geográfica',
+            'Tecnologías de la Información',
+            NULL,
+            '2022-03-14',
+            '2022-12-29',
+            FALSE,
+            'Ciudad Autónoma de Buenos Aires',
+            NULL,
+            'course',
+            1,
+            TRUE
+        )
+) AS v(
+    institution,
+    degree,
+    field_of_study,
+    description,
+    start_date,
+    end_date,
+    is_current,
+    location,
+    institution_url,
+    education_type,
+    sort_order,
+    published
+)
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM education e
+    WHERE e.institution = v.institution
+      AND e.degree = v.degree
+      AND e.education_type = v.education_type
+);
 
 
 -- ============================================================
