@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.schemas.experience import ExperiencePublic
+from app.utils.lists import normalize_string_list
 
 
 class ProfileBase(BaseModel):
@@ -23,6 +24,11 @@ class ProfileBase(BaseModel):
     key_skills: list[str] = Field(default_factory=list)
     is_active: bool = True
     sort_order: int = 0
+
+    @field_validator("focus_areas", "key_skills", mode="before")
+    @classmethod
+    def normalize_list_fields(cls, value: object) -> list[str]:
+        return normalize_string_list(value)
 
 
 class ProfileCreate(ProfileBase):
@@ -48,6 +54,13 @@ class ProfileUpdate(BaseModel):
     key_skills: list[str] | None = None
     is_active: bool | None = None
     sort_order: int | None = None
+
+    @field_validator("focus_areas", "key_skills", mode="before")
+    @classmethod
+    def normalize_list_fields(cls, value: object) -> object:
+        if value is None:
+            return value
+        return normalize_string_list(value)
 
 
 class ProfileRead(ProfileBase):
@@ -80,3 +93,8 @@ class ProfilePublic(BaseModel):
     focus_areas: list[str] = Field(default_factory=list)
     key_skills: list[str] = Field(default_factory=list)
     experiences: list[ExperiencePublic] = Field(default_factory=list)
+
+    @field_validator("focus_areas", "key_skills", mode="before")
+    @classmethod
+    def normalize_list_fields(cls, value: object) -> list[str]:
+        return normalize_string_list(value)

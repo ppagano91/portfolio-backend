@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
     contact,
+    courses,
     dashboards,
     education,
     experiences,
@@ -18,6 +19,7 @@ api_router.include_router(health.router)
 api_router.include_router(profile.router)
 api_router.include_router(profiles.router)
 api_router.include_router(education.router)
+api_router.include_router(courses.router)
 api_router.include_router(experiences.router)
 api_router.include_router(projects.router)
 api_router.include_router(technologies.router)

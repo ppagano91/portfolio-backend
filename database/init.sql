@@ -91,8 +91,8 @@ VALUES (
     'https://github.com/ppagano91',
     'Perfil profesional',
     'Perfil orientado a GIS, datos, software, geociencias, minería, Oil & Gas y geomática, combinando desarrollo backend/frontend con análisis geoespacial.',
-    '["GIS", "Geomática", "Ciencia de Datos", "PostgreSQL/PostGIS", "GeoServer", "APIs REST", "Minería", "Oil & Gas"]'::json,
-    '["Python", "FastAPI", "SQL", "PostgreSQL/PostGIS", "GeoServer", "QGIS", "React", "Leaflet", "MapLibre", "Docker", "Git"]'::json,
+    '["GIS y datos espaciales", "Backend geoespacial", "PostgreSQL/PostGIS", "GeoServer y servicios OGC", "Visualización web de mapas"]'::json,
+    '["Python", "FastAPI", "PostgreSQL", "PostGIS", "GeoServer", "QGIS", "React", "MapLibre", "Docker", "SQLAlchemy"]'::json,
     TRUE,
     0
 )

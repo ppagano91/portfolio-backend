@@ -1,6 +1,7 @@
 from app.core.errors import NotFoundError
 from app.models.education import Education
 from app.repositories.education_repository import EducationRepository
+from app.schemas.course import CoursePublic
 from app.schemas.education import EducationCreate, EducationPublic, EducationRead, EducationUpdate
 
 
@@ -14,6 +15,16 @@ class EducationService:
     def list_education(self, *, published_only: bool = True) -> list[EducationPublic]:
         records = self.education_repo.get_all(published_only=published_only)
         return [self._to_public(record) for record in records]
+
+    def list_courses(self, *, published_only: bool = True) -> list[CoursePublic]:
+        records = self.education_repo.get_courses(published_only=published_only)
+        return [CoursePublic.from_education(record) for record in records]
+
+    def get_public_course(self, course_id: int) -> CoursePublic:
+        course = self.education_repo.get_course_by_id(course_id)
+        if not course or not course.published:
+            raise NotFoundError("Curso", course_id)
+        return CoursePublic.from_education(course)
 
     def get_education(
         self,

@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.education import Education
+from app.models.education import Education, EducationType
 
 
 class EducationRepository:
@@ -20,6 +20,19 @@ class EducationRepository:
         if published_only:
             stmt = stmt.where(Education.published.is_(True))
         return list(self.db.scalars(self._ordered(stmt)).all())
+
+    def get_courses(self, *, published_only: bool = True) -> list[Education]:
+        stmt = select(Education).where(Education.education_type == EducationType.COURSE)
+        if published_only:
+            stmt = stmt.where(Education.published.is_(True))
+        return list(self.db.scalars(self._ordered(stmt)).all())
+
+    def get_course_by_id(self, course_id: int) -> Education | None:
+        stmt = select(Education).where(
+            Education.id == course_id,
+            Education.education_type == EducationType.COURSE,
+        )
+        return self.db.scalar(stmt)
 
     def get_by_id(self, education_id: int) -> Education | None:
         stmt = select(Education).where(Education.id == education_id)
